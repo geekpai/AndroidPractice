@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">AndroidPractice</string>
+    <string name="app_dev_name">Dev_AndroidPractice</string>
 </resources>

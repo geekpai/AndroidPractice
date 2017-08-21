@@ -3,28 +3,89 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
+
     defaultConfig {
         applicationId "com.geekpai.androidpractice"
         minSdkVersion 19
         targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        versionCode 100
+        versionName "1.0.0"
+        multiDexEnabled true
     }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+    dexOptions {
+        javaMaxHeapSize "8g"
+    }
+
+    sourceSets {
+        main {
+            manifest.srcFile 'src/main/AndroidManifest.xml'
+            java.srcDirs = ['src/main/java']
+            res.srcDirs = ['src/main/res']
+            assets.srcDirs = ['src/main/assets']
         }
     }
+
+    signingConfigs {
+        geekpai {
+            storeFile file('keystore/geekpai.jks')
+            storePassword 'geekpai'
+            keyAlias 'geekpai_alias'
+            keyPassword 'geekpai'
+        }
+    }
+
+    buildTypes {
+
+        debug {
+            applicationIdSuffix ".dev"
+            manifestPlaceholders = [
+                    environment     : "dev",
+                    applicationLabel: "@string/app_dev_name"
+            ]
+            signingConfig signingConfigs.geekpai
+            shrinkResources false
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            buildConfigField("String", "BASE_URL", "\"http://mapi.dearitgitl.com\"")
+            buildConfigField("boolean", "DEBUG_MODE", "true")
+        }
+
+        release {
+            manifestPlaceholders = [
+                    environment     : "",
+                    applicationLabel: "@string/app_name"
+            ]
+            signingConfig signingConfigs.geekpai
+            shrinkResources true
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            buildConfigField("String", "BASE_URL", "\"http://mapi.dearitgitl.com\"")
+            buildConfigField("boolean", "DEBUG_MODE", "true")
+        }
+    }
+
     dataBinding {
         enabled = true
+    }
+
+    lintOptions {
+        abortOnError false
+        ignoreWarnings false
+    }
+}
+
+repositories{
+    flatDir{
+        dirs 'libs'
     }
 }
 
 dependencies {
     testCompile 'junit:junit:4.12'
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile "com.android.support:appcompat-v7:$support_version"
     compile 'com.android.support.constraint:constraint-layout:1.0.0-beta3'
 }
